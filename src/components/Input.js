@@ -1,7 +1,7 @@
 import { ArrowUpward } from "@mui/icons-material";
 import { Container, Grid, IconButton, TextField } from "@mui/material";
 
-function Input({ hasError, text, askQuestion, textFieldHandler, isAsked }) {
+function Input({ hasError, text, askQuestion, textFieldHandler, isAsked, handleOpen }) {
   return (
     <>
       <Grid item container sx={{ position: "fixed", bottom: 0 }}>
@@ -28,7 +28,7 @@ function Input({ hasError, text, askQuestion, textFieldHandler, isAsked }) {
               value={text}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  askQuestion(text);
+                  handleOpen();
                 }
               }}
               onChange={textFieldHandler}
@@ -49,7 +49,7 @@ function Input({ hasError, text, askQuestion, textFieldHandler, isAsked }) {
               }}
               aria-label="arrow-upward"
               onClick={() => {
-                askQuestion(text);
+                handleOpen();
               }}
             >
               <ArrowUpward />
