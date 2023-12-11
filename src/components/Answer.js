@@ -1,9 +1,16 @@
 import styled from "@emotion/styled";
-import { Avatar, Box, Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Grid,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { motion } from "framer-motion";
-import { blueGrey } from '@mui/material/colors';
+import { blueGrey } from "@mui/material/colors";
 
-function Question({quest}) {
+function Question({ quest }) {
   const animations = {
     initial: { scale: 0, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
@@ -18,9 +25,9 @@ function Question({quest}) {
     width: "100%",
     color: "#374259",
     backgroundColor: "white",
-    '&:hover': {
+    "&:hover": {
       backgroundColor: "#374259",
-      color: "white"
+      color: "white",
     },
   }));
 
@@ -32,7 +39,6 @@ function Question({quest}) {
         style={{
           display: "flex",
           alignItems: "center",
-    
         }}
       >
         <Box margin={2}>
@@ -65,32 +71,13 @@ function Question({quest}) {
           sx={{ maxWidth: { xs: 175, md: 400 } }}
           borderRadius={6}
         >
-          <Box  marginY={2} >
-          <Typography color="white">Sorulardan örnek bir tanesi?</Typography>
-          <TextField  size="small" sx={{backgroundColor: "white",borderRadius:3, width:"100%"}} />
-          </Box>
-          <Box  marginY={2}>
-          <Typography color="white">Mesela başka örnek diğeri?</Typography>
-          <TextField size="small" sx={{backgroundColor: "white",width:"100%"}} />
-          </Box>
-          <Box  marginY={2}>
-          <Typography color="white">Böyle de bir soru var?</Typography>
-          <TextField size="small" sx={{backgroundColor: "white",width:"100%"}} />
-          </Box>
-          <Box  marginY={2}>
-          <Typography color="white">Uzuuuuun bir soru, bunu cevaplamak lazım?</Typography>
-          <TextField size="small" sx={{backgroundColor: "white",width:"100%"}} />
-          </Box>
-          <Box marginY={2}>
-          <ColorButton variant="text">Gönder</ColorButton>
-          </Box>
-          {/* <Typography
+          <Typography
             style={{ overflowWrap: "break-word" }}
             color="white"
             textAlign="auto"
           >
             {quest}
-          </Typography> */}
+          </Typography>
         </Grid>
       </motion.div>
     </>

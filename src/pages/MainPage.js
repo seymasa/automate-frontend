@@ -16,6 +16,7 @@ import Navbar from "../components/Navbar";
 import Chat from "../components/Chat";
 import Loading from "../components/Loading";
 import Input from "../components/Input";
+import { IoMdClose } from "react-icons/io";
 import styled from "@emotion/styled";
 
 function MainPage() {
@@ -33,7 +34,6 @@ function MainPage() {
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
-    
     setOpen(true);
   };
   const handleClose = () => {
@@ -89,36 +89,43 @@ function MainPage() {
 
   return (
     <>
-      <Dialog open={open} onClose={handleClose}>
-       
-        <DialogTitle>Almam Gereken Bilgiler</DialogTitle>
-        <Box sx={{backgroundColor: "#374259"}}>
-        <DialogContent >
-          <DialogContentText color="white">
+      <Dialog open={open} maxWidth="md" onClose={handleClose}>
+        <Grid container alignItems="center" justifyContent="space-between" paddingX={1} borderBottom={1} >
+          <Grid item>
+            <DialogTitle>Almam Gereken Bilgiler</DialogTitle>
+          </Grid>
+          <Grid item>
+            <Button sx={{color: "black", }} onClick={handleClose}>
+            <IoMdClose size={36}/>
+            </Button>
+          </Grid>
+        </Grid>
+        <DialogContent>
+          <DialogContentText margin={1} color="#374259">
             Sorularına cevap bulmam için aşağıdaki bazı bilgileri doldurman
             gerekebilir.
           </DialogContentText>
-          <Grid container>
+          <Grid container alignItems="center">
             <Grid item xs={6}>
               <Box margin={1}>
-                <Typography color="white">
+                <Typography color="#374259">
                   Sorulardan örnek bir tanesi
                 </Typography>
                 <TextField
                   size="small"
                   sx={{
                     backgroundColor: "white",
+
                     borderRadius: 3,
                     width: "100%",
                   }}
                 />
               </Box>
             </Grid>
+
             <Grid item xs={6}>
               <Box margin={1}>
-                <Typography color="white">
-                  Başka soru
-                </Typography>
+                <Typography color="#374259">Başka soru</Typography>
                 <TextField
                   size="small"
                   sx={{
@@ -129,9 +136,9 @@ function MainPage() {
                 />
               </Box>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <Box margin={1}>
-                <Typography color="white">
+                <Typography color="#374259">
                   Sorulardan örnek bir tanesi?
                 </Typography>
                 <TextField
@@ -144,9 +151,9 @@ function MainPage() {
                 />
               </Box>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <Box margin={1}>
-                <Typography color="white">
+                <Typography color="#374259">
                   Sorulardan örnek bir tanesi?
                 </Typography>
                 <TextField
@@ -158,16 +165,17 @@ function MainPage() {
                   }}
                 />
               </Box>
-              
             </Grid>
-            
           </Grid>
         </DialogContent>
         <DialogActions>
-        <ColorButton2 onClick={handleClose} variant="text">Vazgeç</ColorButton2>
-        <ColorButton onClick={handleClose} variant="text">Gönder</ColorButton>
+          <ColorButton2 onClick={handleClose} variant="text">
+            Vazgeç
+          </ColorButton2>
+          <ColorButton onClick={handleClose} variant="text">
+            Gönder
+          </ColorButton>
         </DialogActions>
-        </Box>
       </Dialog>
       <Grid container>
         <Navbar clearChat={clearChat} />
@@ -204,11 +212,11 @@ const style = {
 const ColorButton = styled(Button)(({ theme }) => ({
   marginY: 1,
 
-  color: "#374259",
-  backgroundColor: "white",
-  '&:hover': {
+  color: "white",
+  backgroundColor: "#374259",
+  "&:hover": {
     backgroundColor: "#374259",
-    color: "white"
+    color: "white",
   },
 }));
 
@@ -217,8 +225,8 @@ const ColorButton2 = styled(Button)(({ theme }) => ({
 
   color: "white",
   backgroundColor: "red",
-  '&:hover': {
-    backgroundColor: "#374259",
-    color: "white"
+  "&:hover": {
+    backgroundColor: "red",
+    color: "white",
   },
 }));
