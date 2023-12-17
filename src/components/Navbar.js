@@ -7,7 +7,6 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-
 function Navbar({clearChat}) {
   return (
     <Grid item container sx={{ position: "sticky", zIndex: 1, top: 0,marginBottom: {xs: 10,md:8}}}>
@@ -21,16 +20,10 @@ function Navbar({clearChat}) {
                   variant="h4"
                   style={{ color: "#FFFFFF", textAlign: "center" }}
                 >
-                  CHATBOT
+                  AutoMate
                 </Typography>
               }
             />
-          </ListItem>
-
-          <ListItem onClick={clearChat} sx={{ justifyContent: "center", backgroundColor: "white" }}>
-            <Button variant="outlined" sx={{color: "374259"}}>
-              Sohbeti Temizle
-              </Button>
           </ListItem>
         </List>
       </Grid>

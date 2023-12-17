@@ -1,6 +1,6 @@
 import { Avatar, Box, Grid, Typography } from "@mui/material";
 import { motion } from "framer-motion";
-
+import user from '../useravatar.png'
 function Answer({answer}) {
   const animations = {
     initial: { scale: 0, opacity: 0 },
@@ -36,7 +36,7 @@ function Answer({answer}) {
             {answer}
           </Typography>
         </Grid>
-        <Avatar>A</Avatar>
+        <Avatar src={user}></Avatar>
         <Box margin={2}>
           <Box
             sx={{

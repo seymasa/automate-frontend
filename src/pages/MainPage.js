@@ -1,47 +1,90 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Grid,
-  Modal,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Grid, IconButton, Snackbar, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import Chat from "../components/Chat";
 import Loading from "../components/Loading";
 import Input from "../components/Input";
-import { IoMdClose } from "react-icons/io";
-import styled from "@emotion/styled";
-
+import Dialog1 from "../components/Dialog1";
+import Dialog2 from "../components/Dialog2";
+import { useFilePicker } from "use-file-picker";
+import { postQuestion, postQuestionWithImage } from "../util/requests";
 function MainPage() {
   const [isAsked, setIsAsked] = useState(false);
 
   const [hasError, setHasError] = useState(false);
 
+  const [data, setData] = useState({
+    name: "",
+    serie: "",
+    package: "",
+    yearkm: "",
+  });
+
   const answers = [
-    "CEVAP",
-    "UZUUUUUUUUUUUUUUUUUN CEVAP",
-    "DAHAAAAAAAA UZUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUN CEVAPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+    "Sayın " +
+      data.name +
+      " gönderdiğiniz talebiniz AutoMate tarafından işleme alınmıştır. En kısa zamanda sizinle iletişime geçilecektir.",
+    data.serie +
+      " serili " +
+      data.package +
+      " aracınızın " +
+      data.yearkm +
+      " km için ücret bilgisi tespit edilip tarafınıza dönüş sağlanacaktır.",
+    "Verdiğiniz bilgilere göre serisi " +
+      data.serie +
+      ", paketi " +
+      data.package +
+      " olan ve yıl/kilometresi " +
+      data.yearkm +
+      " olan aracın",
   ];
 
+  function submitHandler() {
+    handleCloseDialog2();
+    setQuestions((prev) => [...prev, answers[0]]);
+    setIsAsked(false);
+    setData({ name: "", serie: "", package: "", yearkm: "" });
+  }
+
+  function submit1Handler() {
+    setOpenDialog1(false);
+    setQuestions((prev) => [...prev, answers[1]]);
+    setIsAsked(false);
+    setData({ name: "", serie: "", package: "", yearkm: "" });
+  }
   const [questions, setQuestions] = useState([]);
 
-  const [open, setOpen] = useState(false);
+  const [form1Message, setForm1Message] = useState("");
+  const [form2Message, setForm2Message] = useState("");
+
+  const [openDialog1, setOpenDialog1] = useState(false);
+  const [openDialog2, setOpenDialog2] = useState(false);
+
   const handleOpen = () => {
-    setOpen(true);
+    setOpenDialog1(true);
   };
-  const handleClose = () => {
-    askQuestion(text);
-    setOpen(false);
+  const handleCloseDialog2 = () => {
+    setOpenDialog2(false);
+    // setQuestions((prev) => [...prev, answers[Math.floor(Math.random() * 3)]]);
+  };
+  const handleCloseDialog1 = () => {
+    setOpenDialog1(false);
+    // setQuestions((prev) => [...prev, answers[Math.floor(Math.random() * 3)]]);
   };
 
-  function askQuestion(text) {
+  function getLocation() {
+    setQuestions((prev) => [...prev, "Bana en yakın servis nerede?"]);
+    setText("");
+    console.log(questions);
+    setIsAsked(true);
+    setTimeout(function () {
+      setQuestions((prev) => [...prev, "location"]);
+
+      setIsAsked(false);
+    }, 2000);
+  }
+
+  async function askQuestion(text) {
     if (isAsked) {
       return;
     }
@@ -49,22 +92,64 @@ function MainPage() {
       setHasError(true);
       return;
     }
+
     if (!hasError) {
       setQuestions((prev) => [...prev, text]);
       setText("");
-      console.log(questions);
+      clear();
+
       setIsAsked(true);
-      setTimeout(function () {
-        setQuestions((prev) => [
-          ...prev,
-          answers[Math.floor(Math.random() * 3)],
-        ]);
-        setIsAsked(false);
-      }, 2000);
+      if (filesContent.length === 0) {
+        const response = await postQuestion(text);
+        console.log(response.type)
+        if (response.type == null) {
+          setQuestions((prev) => [...prev, response.result]);
+          setIsAsked(false);
+          return;
+        }
+        if (response.type == "form-2") {
+          setOpenDialog2(true);
+          setForm2Message(response.result);
+          return;
+        }
+        if (response.type == "form-1") {
+          setOpenDialog1(true);
+          setForm1Message(response.result);
+          return;
+        } else {
+          setQuestions((prev) => [
+            ...prev,
+            "Oops! ufak bir sorun çıktı, hemen hallediyorum...",
+          ]);
+          setIsAsked(false);
+          return;
+        }
+      }
+      var formData = new FormData();
+      formData.append("question", text);
+      formData.append("file", plainFiles[0]);
+
+      const response = await postQuestionWithImage(formData);
+
+      setQuestions((prev) => [...prev, response.result]);
+      setIsAsked(false);
     }
   }
 
+  const { openFilePicker, filesContent, plainFiles, loading, errors, clear } =
+    useFilePicker({
+      readAs: "DataURL",
+      accept: "image/*",
+      multiple: false,
+    });
+
   function clearChat() {
+    caches.keys().then((names) => {
+      names.forEach((name) => {
+        caches.delete(name);
+      });
+    });
+    clear();
     if (!isAsked) {
       setQuestions([]);
       setIsAsked(false);
@@ -74,7 +159,6 @@ function MainPage() {
   const [text, setText] = useState("");
 
   function textFieldHandler(value) {
-    console.log(value);
     setHasError(false);
     setText(value.target.value);
   }
@@ -89,144 +173,46 @@ function MainPage() {
 
   return (
     <>
-      <Dialog open={open} maxWidth="md" onClose={handleClose}>
-        <Grid container alignItems="center" justifyContent="space-between" paddingX={1} borderBottom={1} >
-          <Grid item>
-            <DialogTitle>Almam Gereken Bilgiler</DialogTitle>
-          </Grid>
-          <Grid item>
-            <Button sx={{color: "black", }} onClick={handleClose}>
-            <IoMdClose size={36}/>
-            </Button>
-          </Grid>
-        </Grid>
-        <DialogContent>
-          <DialogContentText margin={1} color="#374259">
-            Sorularına cevap bulmam için aşağıdaki bazı bilgileri doldurman
-            gerekebilir.
-          </DialogContentText>
-          <Grid container alignItems="center">
-            <Grid item xs={6}>
-              <Box margin={1}>
-                <Typography color="#374259">
-                  Sorulardan örnek bir tanesi
-                </Typography>
-                <TextField
-                  size="small"
-                  sx={{
-                    backgroundColor: "white",
-
-                    borderRadius: 3,
-                    width: "100%",
-                  }}
-                />
-              </Box>
-            </Grid>
-
-            <Grid item xs={6}>
-              <Box margin={1}>
-                <Typography color="#374259">Başka soru</Typography>
-                <TextField
-                  size="small"
-                  sx={{
-                    backgroundColor: "white",
-                    borderRadius: 3,
-                    width: "100%",
-                  }}
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={12}>
-              <Box margin={1}>
-                <Typography color="#374259">
-                  Sorulardan örnek bir tanesi?
-                </Typography>
-                <TextField
-                  size="small"
-                  sx={{
-                    backgroundColor: "white",
-                    borderRadius: 3,
-                    width: "100%",
-                  }}
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={12}>
-              <Box margin={1}>
-                <Typography color="#374259">
-                  Sorulardan örnek bir tanesi?
-                </Typography>
-                <TextField
-                  size="small"
-                  sx={{
-                    backgroundColor: "white",
-                    borderRadius: 3,
-                    width: "100%",
-                  }}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <ColorButton2 onClick={handleClose} variant="text">
-            Vazgeç
-          </ColorButton2>
-          <ColorButton onClick={handleClose} variant="text">
-            Gönder
-          </ColorButton>
-        </DialogActions>
-      </Dialog>
       <Grid container>
-        <Navbar clearChat={clearChat} />
+        <Navbar />
 
+        <Dialog1
+          open={openDialog1}
+          handleClose={handleCloseDialog1}
+          submit1Handler={submit1Handler}
+          setData={setData}
+          data={data}
+          message={form1Message}
+        />
+        <Dialog2
+          open={openDialog2}
+          handleClose={handleCloseDialog2}
+          submitHandler={submitHandler}
+          setData={setData}
+          data={data}
+          message={form2Message}
+        />
         <Chat questions={questions} />
 
         <Loading isAsked={isAsked} />
         <div ref={lastMessageRef} />
-        <Input
-          hasError={hasError}
-          text={text}
-          textFieldHandler={textFieldHandler}
-          askQuestion={askQuestion}
-          isAsked={isAsked}
-          handleOpen={handleOpen}
-        />
+        <Grid container display="flex" flexDirection="row">
+          <Input
+            clearChat={clearChat}
+            hasError={hasError}
+            text={text}
+            textFieldHandler={textFieldHandler}
+            askQuestion={askQuestion}
+            isAsked={isAsked}
+            handleOpen={handleOpen}
+            openFilePicker={openFilePicker}
+            filesContent={filesContent}
+            getLocation={getLocation}
+          />
+        </Grid>
       </Grid>
     </>
   );
 }
 
 export default MainPage;
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-const ColorButton = styled(Button)(({ theme }) => ({
-  marginY: 1,
-
-  color: "white",
-  backgroundColor: "#374259",
-  "&:hover": {
-    backgroundColor: "#374259",
-    color: "white",
-  },
-}));
-
-const ColorButton2 = styled(Button)(({ theme }) => ({
-  marginY: 1,
-
-  color: "white",
-  backgroundColor: "red",
-  "&:hover": {
-    backgroundColor: "red",
-    color: "white",
-  },
-}));
