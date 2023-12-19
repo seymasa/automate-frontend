@@ -74,13 +74,13 @@ function Question({ quest }) {
           sx={{ maxWidth: { xs: 175, md: 400 } }}
           borderRadius={6}
         >
-          {quest == "location" ? <>
+          {quest.key == "location" ? <>
           <Typography fontSize={16} color="white">Size en yakın servis tespit edilmiştir.</Typography>
 
           <Box marginY={1} width={350} height={250} component="img" src={map} />
-          <Typography fontWeight="bold" fontSize={24} color="white">Borusan Oto Samandıra</Typography>
-          <Typography fontSize={15} color="white">Akpınar mah. Bilim cad. No:2 Sancaktepe/İSTANBUL</Typography>
-          <Typography fontSize={16} color="white">0850 755 06 06</Typography>
+          <Typography fontWeight="bold" fontSize={24} color="white">{quest.value.name}</Typography>
+          <Typography fontSize={15} color="white">{quest.value.address}</Typography>
+          <Typography fontSize={16} color="white">{quest.value.phone}</Typography>
 
           </> : 
           <Typography

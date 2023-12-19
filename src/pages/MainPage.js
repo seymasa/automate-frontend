@@ -13,6 +13,96 @@ function MainPage() {
 
   const [hasError, setHasError] = useState(false);
 
+  const locations = [
+    {
+      name: "Borusan Oto Adana - Mersin",
+      address: "Yenice Mah. Cemal Gürsel Blv. No: 160/A Tarsus / Mersin",
+      phone: "0850 755 06 06",
+      lat: 36.977588,
+      lng: 35.080323,
+    },
+    {
+      name: "Borusan Oto Avcılar",
+      address: "Firuzköy Bulvarı No 21 Avcılar / İstanbul",
+      phone: "0850 755 06 06",
+      lat: 40.992769,
+      lng: 28.716821,
+    },
+    {
+      name: "Borusan Oto Bodrum",
+      address: "Konacık Mah. Atatürk Bulvarı No:214/1 Bodrum / Muğla",
+      phone: "0850 755 06 06",
+      lat: 37.056024,
+      lng: 27.371859,
+    },
+    {
+      name: "Borusan Oto Çayyolu",
+      address: "Konutkent Mah. 3028 Cad. No:6 İç Kapı No:130  Çankaya/Ankara",
+      phone: "0850 755 06 06",
+      lat: 39.879158,
+      lng: 32.655756,
+    },
+    {
+      name: "Borusan Oto Çorlu",
+      address: "E-5 Karayolu üzeri İstanbul Cad. No:39 Çorlu / Tekirdağ",
+      phone: "0850 755 06 06",
+      lat: 41.142448,
+      lng: 27.862961,
+    },
+    {
+      name: "Borusan Oto Diyarbakır",
+      address:
+        "Mezopotamya Mah. Mahabad Bulvarı No: 61 D Kayapınar / Diyarbakır",
+      phone: "0850 755 06 06",
+      lat: 37.934383,
+      lng: 40.155239,
+    },
+    {
+      name: "Borusan Oto Esenboğa",
+      address: "Saracalar Mahallesi Özal Bulvarı No: 228 Akyurt / Ankara",
+      phone: "0850 755 06 06",
+      lat: 40.087867,
+      lng: 32.974723,
+    },
+    {
+      name: "Borusan Oto Gaziantep",
+      address:
+        "15 Temmuz Mah. Prof. Dr. Necmettin Erbakan Bulvarı No: 73/49 Prime Cadde  ŞEHİTKAMİL/GAZİANTEP",
+      phone: "0850 755 06 06",
+      lat: 37.050919,
+      lng: 37.316005,
+    },
+    {
+      name: "Borusan Oto İstinye",
+      address: "Poligon Mahallesi Sarıyer Cad. No 77 Sarıyer / İstanbul",
+      phone: "0850 755 06 06",
+      lat: 41.120336,
+      lng: 29.047132,
+    },
+    {
+      name: "Borusan Oto Kıbrıs",
+      address: "Organize Sanayi Bölgesi 1. Cadde No: 21 Lefkoşa / K.K.T.C.",
+      phone: "0392 225 27 22",
+      lat: 35.213077,
+      lng: 33.344071,
+    },
+    {
+      name: "Borusan Oto Samandıra",
+      address: "Akpınar mah. Bilim cad. No:2 Sancaktepe / İstanbul",
+      phone: "0850 755 06 06",
+      lat: 40.975616,
+      lng: 29.228871,
+    },
+    {
+      name: "Borusan Oto Vadi",
+      address:
+        "Hamidiye Mahallesi, Selçuklu Caddesi, No:10 C Blok Vadi Park / Kağıthane / İstanbul",
+      phone: "0850 755 06 06",
+      lat: 41.1022,
+      lng: 28.973314,
+    },
+  ];
+
   const [data, setData] = useState({
     name: "",
     serie: "",
@@ -72,13 +162,79 @@ function MainPage() {
     // setQuestions((prev) => [...prev, answers[Math.floor(Math.random() * 3)]]);
   };
 
+
+  var options = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0,
+  };
+
+  let bayi = {}
+
+
+  function success(pos) {
+    var crd = pos.coords;
+    console.log("Your current position is:");
+    console.log(`Latitude : ${crd.latitude}`);
+    console.log(`Longitude: ${crd.longitude}`);
+    console.log(`More or less ${crd.accuracy} meters.`);
+
+    let sum = 999;
+    for (let i = 0; i < locations.length; i++) {
+      if (
+        Math.abs(locations[i].lat - crd.latitude) +
+          Math.abs(locations[i].lng - crd.longitude) <
+        sum
+      ) {
+        sum =
+          Math.abs(locations[i].lat - crd.latitude) +
+          Math.abs(locations[i].lng - crd.longitude);
+          bayi = locations[i];
+      }
+
+    }
+
+  }
+
+  function errorsHandler(err) {
+    console.warn(`ERROR(${err.code}): ${err.message}`);
+  }
+
   function getLocation() {
     setQuestions((prev) => [...prev, "Bana en yakın servis nerede?"]);
     setText("");
     console.log(questions);
+    if (navigator.geolocation) {
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then(function (result) {
+          console.log(result);
+          if (result.state === "granted") {
+            console.log("izin var!");
+            navigator.geolocation.getCurrentPosition(
+              success,
+              errorsHandler,
+              options
+            );
+          } else if (result.state === "prompt") {
+            console.log("bell değil sanırım");
+            navigator.geolocation.getCurrentPosition(
+              success,
+              errorsHandler,
+              options
+            );
+          } else if (result.state === "denied") {
+            console.log("izin yok!");
+          }
+        });
+    } else {
+      console.log("bu tarayıcıda geolocation desteklenmiyor!");
+    }
+
+
     setIsAsked(true);
     setTimeout(function () {
-      setQuestions((prev) => [...prev, "location"]);
+      setQuestions((prev) => [...prev, {key: "location",value: bayi}]);
 
       setIsAsked(false);
     }, 2000);
@@ -101,7 +257,7 @@ function MainPage() {
       setIsAsked(true);
       if (filesContent.length === 0) {
         const response = await postQuestion(text);
-        console.log(response.type)
+        console.log(response.type);
         if (response.type == null) {
           setQuestions((prev) => [...prev, response.result]);
           setIsAsked(false);
