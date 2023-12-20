@@ -108,7 +108,15 @@ function MainPage() {
     serie: "",
     package: "",
     yearkm: "",
+    sasi: "",
+    plaka: "",
+    seri: "",
+    model: ""
   });
+
+  const [distance, setDistance] = useState(null);
+
+
 
   const answers = [
     "Sayın " +
@@ -120,13 +128,7 @@ function MainPage() {
       " aracınızın " +
       data.yearkm +
       " km için ücret bilgisi tespit edilip tarafınıza dönüş sağlanacaktır.",
-    "Verdiğiniz bilgilere göre serisi " +
-      data.serie +
-      ", paketi " +
-      data.package +
-      " olan ve yıl/kilometresi " +
-      data.yearkm +
-      " olan aracın",
+      "Yaptığınız işlemden vazgeçtiniz, başka bir talep veya sorunuz varsa memnuniyet ile cevap verebilirim."
   ];
 
   function submitHandler() {
@@ -155,11 +157,14 @@ function MainPage() {
   };
   const handleCloseDialog2 = () => {
     setOpenDialog2(false);
-    // setQuestions((prev) => [...prev, answers[Math.floor(Math.random() * 3)]]);
+    setQuestions((prev) => [...prev, answers[2]]);
+    setIsAsked(false);
   };
   const handleCloseDialog1 = () => {
     setOpenDialog1(false);
-    // setQuestions((prev) => [...prev, answers[Math.floor(Math.random() * 3)]]);
+    setQuestions((prev) => [...prev, answers[2]]);
+    setIsAsked(false);
+
   };
 
   var options = {
@@ -169,6 +174,9 @@ function MainPage() {
   };
 
   let bayi = {};
+  const toRadians = (degree) => {
+    return degree * (Math.PI / 180);
+};
 
   function success(pos) {
     var crd = pos.coords;
@@ -177,18 +185,24 @@ function MainPage() {
     console.log(`Longitude: ${crd.longitude}`);
     console.log(`More or less ${crd.accuracy} meters.`);
 
-    let sum = 999;
+  
+
+
+    let distance = 999;
+    const R = 6371;
+
     for (let i = 0; i < locations.length; i++) {
+      const dLat = toRadians(locations[i].lat - crd.latitude);
+      const dLon = toRadians(locations[i].lng - crd.longitude);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRadians(crd.latitude)) * Math.cos(toRadians(locations[i].lat)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const d = R * c; 
       if (
-        Math.sqrt(
-          Math.pow(Math.abs(locations[i].lat - crd.latitude), 2) +
-            Math.pow(Math.abs(locations[i].lng - crd.longitude), 2)
-        ) < sum
+        d < distance
       ) {
-        sum = Math.sqrt(
-          Math.pow(Math.abs(locations[i].lat - crd.latitude), 2) +
-            Math.pow(Math.abs(locations[i].lng - crd.longitude), 2)
-        );
+        distance = R*c;
         bayi = locations[i];
       }
       // if (
@@ -239,7 +253,6 @@ function MainPage() {
               errorsHandler,
               options
             );
-
           } else if (result.state === "prompt") {
             console.log("bell değil sanırım");
             navigator.geolocation.getCurrentPosition(
@@ -254,7 +267,6 @@ function MainPage() {
               errorsHandler,
               options
             );
-
           }
         });
     } else {
@@ -343,11 +355,13 @@ function MainPage() {
   const lastMessageRef = useRef(null);
 
   useEffect(() => {
-    lastMessageRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-  }, [isAsked]);
+    setTimeout(() => {
+      lastMessageRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }, 400);
+  }, [isAsked, questions,isAsked,setIsAsked]);
 
   return (
     <>
@@ -373,8 +387,8 @@ function MainPage() {
         <Chat questions={questions} />
         <div ref={lastMessageRef} />
         <Loading isAsked={isAsked} />
-       
-        <Grid container display="flex" flexDirection="row" marginTop={5}>
+
+        <Grid container display="flex" flexDirection="row">
           <Input
             clearChat={clearChat}
             hasError={hasError}
