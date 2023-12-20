@@ -12,12 +12,9 @@ import {
   FormControlLabel,
   Grid,
   InputBase,
-  MenuItem,
   NativeSelect,
   Radio,
   RadioGroup,
-  Select,
-  TextField,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
@@ -72,6 +69,11 @@ const yearkm = [
   "5/80.000",
 ];
 
+const provinces = ["İstanbul"];
+const districts = ["Ümraniye"];
+const mahalle = ["Site"];
+
+
 function Dialog1({
   open,
   handleClose,
@@ -80,20 +82,31 @@ function Dialog1({
   submit1Handler,
   message,
 }) {
+
   const [step, setStep] = useState(0);
+
   function nextStep() {
-    setStep(step + 1);
-    console.log(step);
+    if(step<3){
+      setStep(step + 1);
+    }else{
+      submit1Handler();
+      setStep(0)
+    }
   }
   function previousStep() {
-    setStep(step - 1);
+    if(step>0){
+      setStep(step - 1);
+    }else{
+      handleClose();
+      setStep(0)
+    }
     console.log(step);
   }
   const handleSasi = (event) => {
     setData((prev) => ({ ...prev, sasi: event.target.value }));
   };
   const handlePlaka = (event) => {
-    setData((prev) => ({ ...prev, sasi: event.target.value }));
+    setData((prev) => ({ ...prev, plaka: event.target.value }));
   };
   const handleSeri = (event) => {
     setData((prev) => ({ ...prev, seri: event.target.value }));
@@ -111,8 +124,20 @@ function Dialog1({
   const handleYearKM = (event) => {
     setData((prev) => ({ ...prev, yearkm: event.target.value }));
   };
-  const handleAd = (event) => {
-    setData((prev) => ({ ...prev, yearkm: event.target.value }));
+  const handleName = (event) => {
+    setData((prev) => ({ ...prev, name: event.target.value }));
+  };
+  const handleSurname = (event) => {
+    setData((prev) => ({ ...prev, surname: event.target.value }));
+  };
+  const handlePhone = (event) => {
+    setData((prev) => ({ ...prev, phone: event.target.value }));
+  };
+  const handleEmail = (event) => {
+    setData((prev) => ({ ...prev, email: event.target.value }));
+  };
+  const handleAdres = (event) => {
+    setData((prev) => ({ ...prev, adres: event.target.value }));
   };
 
   let content = (
@@ -281,8 +306,8 @@ function Dialog1({
                 <Typography color="#374259">Adınız</Typography>
                 <FormControl fullWidth variant="standard">
                   <BootstrapInput
-                    value={data.sasi}
-                    onChange={() => {}}
+                    value={data.name}
+                    onChange={handleName}
                     required
                     id="bootstrap-input"
                   />
@@ -294,8 +319,8 @@ function Dialog1({
                 <Typography color="#374259">Soyadınız</Typography>
                 <FormControl fullWidth variant="standard">
                   <BootstrapInput
-                    value={data.plaka}
-                    onChange={handlePlaka}
+                    value={data.surname}
+                    onChange={handleSurname}
                     required
                     id="bootstrap-input"
                   />
@@ -307,8 +332,8 @@ function Dialog1({
                 <Typography color="#374259">Telefon</Typography>
                 <FormControl fullWidth variant="standard">
                   <BootstrapInput
-                    value={data.seri}
-                    onChange={handleSeri}
+                    value={data.phone}
+                    onChange={handlePhone}
                     required
                     id="bootstrap-input"
                   />
@@ -320,8 +345,8 @@ function Dialog1({
                 <Typography color="#374259">E-Posta</Typography>
                 <FormControl fullWidth variant="standard">
                   <BootstrapInput
-                    value={data.model}
-                    onChange={handleModel}
+                    value={data.email}
+                    onChange={handleEmail}
                     required
                     id="bootstrap-input"
                   />
@@ -364,66 +389,64 @@ function Dialog1({
             Adres bilgilerinizi giriş yapınız
           </DialogContentText>
 
-          <RadioGroup
-            row
-            aria-labelledby="demo-row-radio-buttons-group-label"
-            name="row-radio-buttons-group"
-          >
-            <FormControlLabel
-              value="yes"
-              control={<Radio />}
-              label="Bireysel"
-            />
-            <FormControlLabel value="no" control={<Radio />} label="Kurumsal" />
-          </RadioGroup>
+          
           <Divider sx={{ marginY: 2 }} />
           <Grid container alignItems="center">
             <Grid item xs={12}>
               <Box margin={1}>
-                <Typography color="#374259">Adınız</Typography>
+                <Typography color="#374259">İl</Typography>
                 <FormControl fullWidth variant="standard">
-                  <BootstrapInput
-                    value={data.sasi}
-                    onChange={() => {}}
-                    required
-                    id="bootstrap-input"
-                  />
-                </FormControl>
+                <NativeSelect
+                  id="demo-customized-select-native"
+                  input={<BootstrapInput />}
+                >
+                  <option aria-label="None" value="" />
+                  {provinces.map((province) => (
+                    <option value={province}>{province}</option>
+                  ))}
+                </NativeSelect>
+              </FormControl>
               </Box>
             </Grid>
             <Grid item xs={12}>
               <Box margin={1}>
-                <Typography color="#374259">Soyadınız</Typography>
+                <Typography color="#374259">İlçe</Typography>
                 <FormControl fullWidth variant="standard">
-                  <BootstrapInput
-                    value={data.plaka}
-                    onChange={handlePlaka}
-                    required
-                    id="bootstrap-input"
-                  />
-                </FormControl>
+                <NativeSelect
+                  id="demo-customized-select-native"
+                  input={<BootstrapInput />}
+                >
+                  <option aria-label="None" value="" />
+                  {districts.map((district) => (
+                    <option value={district}>{district}</option>
+                  ))}
+                </NativeSelect>
+              </FormControl>
               </Box>
             </Grid>
             <Grid item xs={12}>
               <Box margin={1}>
-                <Typography color="#374259">Telefon</Typography>
+                <Typography color="#374259">Mahalle</Typography>
                 <FormControl fullWidth variant="standard">
-                  <BootstrapInput
-                    value={data.seri}
-                    onChange={handleSeri}
-                    required
-                    id="bootstrap-input"
-                  />
-                </FormControl>
+                <NativeSelect
+                  id="demo-customized-select-native"
+                  input={<BootstrapInput />}
+                >
+                  <option aria-label="None" value="" />
+                  {mahalle.map((mhl) => (
+                    <option value={mhl}>{mhl}</option>
+                  ))}
+                </NativeSelect>
+              </FormControl>
               </Box>
             </Grid>
             <Grid item xs={12}>
               <Box margin={1}>
-                <Typography color="#374259">E-Posta</Typography>
+                <Typography color="#374259">Adres</Typography>
                 <FormControl fullWidth variant="standard">
                   <BootstrapInput
-                    value={data.model}
-                    onChange={handleModel}
+                    value={data.adres}
+                    onChange={handleAdres}
                     required
                     id="bootstrap-input"
                   />
@@ -431,28 +454,7 @@ function Dialog1({
               </Box>
             </Grid>
           </Grid>
-          <Divider sx={{ marginY: 2 }} />
-
-          <Typography>
-            Kişisel Verilerinizi rıza metninde belirtilen kapsamda işlememizi
-            onaylıyor musunuz?
-          </Typography>
-          <RadioGroup
-            row
-            aria-labelledby="demo-row-radio-buttons-group-label"
-            name="row-radio-buttons-group"
-          >
-            <FormControlLabel
-              value="yes"
-              control={<Radio />}
-              label="Evet, onaylıyorum"
-            />
-            <FormControlLabel
-              value="no"
-              control={<Radio />}
-              label="Hayır, onaylamıyorum"
-            />
-          </RadioGroup>
+          
         </DialogContent>
       </>
     );
@@ -481,7 +483,7 @@ function Dialog1({
           Vazgeç
         </ColorButton2>
         <ColorButton fullWidth onClick={nextStep} variant="text">
-          Devam
+          {step != 3 ? "Devam" : "Gönder"}
         </ColorButton>
       </DialogActions>
     </Dialog>

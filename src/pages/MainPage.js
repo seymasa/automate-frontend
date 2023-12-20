@@ -1,4 +1,4 @@
-import { Box, Grid, IconButton, Snackbar, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import Chat from "../components/Chat";
@@ -105,44 +105,75 @@ function MainPage() {
 
   const [data, setData] = useState({
     name: "",
+    surname: "",
     serie: "",
+    phone: "",
+    email: "",
     package: "",
     yearkm: "",
     sasi: "",
     plaka: "",
     seri: "",
-    model: ""
+    model: "",
+    adres: "",
   });
-
-  const [distance, setDistance] = useState(null);
-
-
 
   const answers = [
     "Sayın " +
       data.name +
       " gönderdiğiniz talebiniz AutoMate tarafından işleme alınmıştır. En kısa zamanda sizinle iletişime geçilecektir.",
-    data.serie +
+    "Sayın " +
+      data.name +
+      " " +
+      data.serie +
       " serili " +
+      data.sasi +
+      " numarasına sahip " +
       data.package +
       " aracınızın " +
       data.yearkm +
       " km için ücret bilgisi tespit edilip tarafınıza dönüş sağlanacaktır.",
-      "Yaptığınız işlemden vazgeçtiniz, başka bir talep veya sorunuz varsa memnuniyet ile cevap verebilirim."
+    "Yaptığınız işlemden vazgeçtiniz, başka bir talep veya sorunuz varsa memnuniyet ile cevap verebilirim.",
   ];
 
   function submitHandler() {
-    handleCloseDialog2();
     setQuestions((prev) => [...prev, answers[0]]);
+    setOpenDialog2(false);
     setIsAsked(false);
-    setData({ name: "", serie: "", package: "", yearkm: "" });
+    setData({
+      name: "",
+      surname: "",
+      serie: "",
+      phone: "",
+      email: "",
+      package: "",
+      yearkm: "",
+      sasi: "",
+      plaka: "",
+      seri: "",
+      model: "",
+      adres: "",
+    });
   }
 
   function submit1Handler() {
     setOpenDialog1(false);
     setQuestions((prev) => [...prev, answers[1]]);
     setIsAsked(false);
-    setData({ name: "", serie: "", package: "", yearkm: "" });
+    setData({
+      name: "",
+      surname: "",
+      serie: "",
+      phone: "",
+      email: "",
+      package: "",
+      yearkm: "",
+      sasi: "",
+      plaka: "",
+      seri: "",
+      model: "",
+      adres: "",
+    });
   }
   const [questions, setQuestions] = useState([]);
 
@@ -159,12 +190,39 @@ function MainPage() {
     setOpenDialog2(false);
     setQuestions((prev) => [...prev, answers[2]]);
     setIsAsked(false);
+    setData({
+      name: "",
+      surname: "",
+      serie: "",
+      phone: "",
+      email: "",
+      package: "",
+      yearkm: "",
+      sasi: "",
+      plaka: "",
+      seri: "",
+      model: "",
+      adres: "",
+    });
   };
   const handleCloseDialog1 = () => {
     setOpenDialog1(false);
     setQuestions((prev) => [...prev, answers[2]]);
     setIsAsked(false);
-
+    setData({
+      name: "",
+      surname: "",
+      serie: "",
+      phone: "",
+      email: "",
+      package: "",
+      yearkm: "",
+      sasi: "",
+      plaka: "",
+      seri: "",
+      model: "",
+      adres: "",
+    });
   };
 
   var options = {
@@ -176,7 +234,7 @@ function MainPage() {
   let bayi = {};
   const toRadians = (degree) => {
     return degree * (Math.PI / 180);
-};
+  };
 
   function success(pos) {
     var crd = pos.coords;
@@ -185,37 +243,24 @@ function MainPage() {
     console.log(`Longitude: ${crd.longitude}`);
     console.log(`More or less ${crd.accuracy} meters.`);
 
-  
-
-
     let distance = 999;
     const R = 6371;
 
     for (let i = 0; i < locations.length; i++) {
       const dLat = toRadians(locations[i].lat - crd.latitude);
       const dLon = toRadians(locations[i].lng - crd.longitude);
-      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(toRadians(crd.latitude)) * Math.cos(toRadians(locations[i].lat)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRadians(crd.latitude)) *
+          Math.cos(toRadians(locations[i].lat)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const d = R * c; 
-      if (
-        d < distance
-      ) {
-        distance = R*c;
+      const d = R * c;
+      if (d < distance) {
+        distance = R * c;
         bayi = locations[i];
       }
-      // if (
-      //   Math.abs(locations[i].lat - crd.latitude) +
-      //     Math.abs(locations[i].lng - crd.longitude) <
-      //   sum
-      // ) {
-      //   console.log(locations[i].name)
-      //   sum =
-      //     Math.abs(locations[i].lat - crd.latitude) +
-      //     Math.abs(locations[i].lng - crd.longitude);
-      //     bayi = locations[i];
-      // }
     }
     setQuestions((prev) => [...prev, { key: "location", value: bayi }]);
 
@@ -360,8 +405,8 @@ function MainPage() {
         behavior: "smooth",
         block: "end",
       });
-    }, 400);
-  }, [isAsked, questions,isAsked,setIsAsked]);
+    }, 700);
+  }, [isAsked, questions, setIsAsked]);
 
   return (
     <>
@@ -385,8 +430,8 @@ function MainPage() {
           message={form2Message}
         />
         <Chat questions={questions} />
-        <div ref={lastMessageRef} />
         <Loading isAsked={isAsked} />
+        <div ref={lastMessageRef} />
 
         <Grid container display="flex" flexDirection="row">
           <Input
