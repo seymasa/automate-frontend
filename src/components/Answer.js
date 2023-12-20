@@ -10,8 +10,7 @@ import {
 import { motion } from "framer-motion";
 import { blueGrey } from "@mui/material/colors";
 import map from "../map.png";
-import nanelimonlogo from '../nanelimonlogo.png'
-
+import nanelimonlogo from "../nanelimonlogo.png";
 
 function Question({ quest }) {
   const animations = {
@@ -74,23 +73,46 @@ function Question({ quest }) {
           sx={{ maxWidth: { xs: 175, md: 400 } }}
           borderRadius={6}
         >
-          {quest.key == "location" ? <>
-          <Typography fontSize={16} color="white">Size en yakın servis tespit edilmiştir.</Typography>
+          {quest.key == "location" ? (
+            typeof quest.value != "string" ? (
+              <>
+                <Typography fontSize={16} color="white">
+                  Size en yakın servis tespit edilmiştir.
+                </Typography>
 
-          <Box marginY={1} width={350} height={250} component="img" src={map} />
-          <Typography fontWeight="bold" fontSize={24} color="white">{quest.value.name}</Typography>
-          <Typography fontSize={15} color="white">{quest.value.address}</Typography>
-          <Typography fontSize={16} color="white">{quest.value.phone}</Typography>
-
-          </> : 
-          <Typography
-            style={{ overflowWrap: "break-word" }}
-            color="white"
-            textAlign="auto"
-          >
-            {quest}
-          </Typography>
-          }
+                <Box
+                  marginY={1}
+                  width={350}
+                  height={250}
+                  component="img"
+                  src={map}
+                />
+                <Typography fontWeight="bold" fontSize={24} color="white">
+                  {quest.value.name}
+                </Typography>
+                <Typography fontSize={15} color="white">
+                  {quest.value.address}
+                </Typography>
+                <Typography fontSize={16} color="white">
+                  {quest.value.phone}
+                </Typography>
+              </>
+            ) : (
+              <>
+                <Typography fontSize={16} color="white">
+                  {quest.value}
+                </Typography>
+              </>
+            )
+          ) : (
+            <Typography
+              style={{ overflowWrap: "break-word" }}
+              color="white"
+              textAlign="auto"
+            >
+              {quest}
+            </Typography>
+          )}
         </Grid>
       </motion.div>
     </>

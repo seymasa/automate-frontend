@@ -162,15 +162,13 @@ function MainPage() {
     // setQuestions((prev) => [...prev, answers[Math.floor(Math.random() * 3)]]);
   };
 
-
   var options = {
     enableHighAccuracy: true,
     timeout: 5000,
     maximumAge: 0,
   };
 
-  let bayi = {}
-
+  let bayi = {};
 
   function success(pos) {
     var crd = pos.coords;
@@ -182,21 +180,45 @@ function MainPage() {
     let sum = 999;
     for (let i = 0; i < locations.length; i++) {
       if (
-        Math.abs(locations[i].lat - crd.latitude) +
-          Math.abs(locations[i].lng - crd.longitude) <
-        sum
+        Math.sqrt(
+          Math.pow(Math.abs(locations[i].lat - crd.latitude), 2) +
+            Math.pow(Math.abs(locations[i].lng - crd.longitude), 2)
+        ) < sum
       ) {
-        sum =
-          Math.abs(locations[i].lat - crd.latitude) +
-          Math.abs(locations[i].lng - crd.longitude);
-          bayi = locations[i];
+        sum = Math.sqrt(
+          Math.pow(Math.abs(locations[i].lat - crd.latitude), 2) +
+            Math.pow(Math.abs(locations[i].lng - crd.longitude), 2)
+        );
+        bayi = locations[i];
       }
-
+      // if (
+      //   Math.abs(locations[i].lat - crd.latitude) +
+      //     Math.abs(locations[i].lng - crd.longitude) <
+      //   sum
+      // ) {
+      //   console.log(locations[i].name)
+      //   sum =
+      //     Math.abs(locations[i].lat - crd.latitude) +
+      //     Math.abs(locations[i].lng - crd.longitude);
+      //     bayi = locations[i];
+      // }
     }
+    setQuestions((prev) => [...prev, { key: "location", value: bayi }]);
 
+    setIsAsked(false);
   }
 
   function errorsHandler(err) {
+    setQuestions((prev) => [
+      ...prev,
+      {
+        key: "location",
+        value:
+          "Size en yakın servisi gösterebilmem için konum izni almam gerekiyor...",
+      },
+    ]);
+    setIsAsked(false);
+
     console.warn(`ERROR(${err.code}): ${err.message}`);
   }
 
@@ -204,6 +226,7 @@ function MainPage() {
     setQuestions((prev) => [...prev, "Bana en yakın servis nerede?"]);
     setText("");
     console.log(questions);
+    setIsAsked(true);
     if (navigator.geolocation) {
       navigator.permissions
         .query({ name: "geolocation" })
@@ -216,6 +239,7 @@ function MainPage() {
               errorsHandler,
               options
             );
+
           } else if (result.state === "prompt") {
             console.log("bell değil sanırım");
             navigator.geolocation.getCurrentPosition(
@@ -225,19 +249,17 @@ function MainPage() {
             );
           } else if (result.state === "denied") {
             console.log("izin yok!");
+            navigator.geolocation.getCurrentPosition(
+              success,
+              errorsHandler,
+              options
+            );
+
           }
         });
     } else {
       console.log("bu tarayıcıda geolocation desteklenmiyor!");
     }
-
-
-    setIsAsked(true);
-    setTimeout(function () {
-      setQuestions((prev) => [...prev, {key: "location",value: bayi}]);
-
-      setIsAsked(false);
-    }, 2000);
   }
 
   async function askQuestion(text) {
