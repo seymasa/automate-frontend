@@ -371,10 +371,10 @@ function MainPage() {
           message={form2Message}
         />
         <Chat questions={questions} />
-
-        <Loading isAsked={isAsked} />
         <div ref={lastMessageRef} />
-        <Grid container display="flex" flexDirection="row">
+        <Loading isAsked={isAsked} />
+       
+        <Grid container display="flex" flexDirection="row" marginTop={5}>
           <Input
             clearChat={clearChat}
             hasError={hasError}
