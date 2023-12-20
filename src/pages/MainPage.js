@@ -128,7 +128,7 @@ function MainPage() {
       data.serie +
       " serili " +
       data.sasi +
-      " numarasına sahip " +
+      " şasi numarasına sahip " +
       data.package +
       " aracınızın " +
       data.yearkm +
@@ -268,6 +268,7 @@ function MainPage() {
   }
 
   function errorsHandler(err) {
+    
     setQuestions((prev) => [
       ...prev,
       {
@@ -277,6 +278,7 @@ function MainPage() {
       },
     ]);
     setIsAsked(false);
+    
 
     console.warn(`ERROR(${err.code}): ${err.message}`);
   }
