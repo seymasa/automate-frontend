@@ -11,8 +11,36 @@ import { motion } from "framer-motion";
 import { blueGrey } from "@mui/material/colors";
 import map from "../map.png";
 import nanelimonlogo from "../nanelimonlogo.png";
+import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
+import { useCallback, useState } from "react";
 
 function Question({ quest }) {
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+  });
+  const [map, setMap] = useState(null);
+
+  const center = {
+    lat: quest.key == "location" ? quest.value.lat : null,
+    lng: quest.key == "location" ? quest.value.lng : null,
+  };
+
+  const onLoad = useCallback(function callback(map) {
+    // This is just an example of getting and using the map instance!!! don't just blindly copy!
+    const bounds = new window.google.maps.LatLngBounds(
+      quest.key == "location"
+        ? { lat: quest.value.lat, lng: quest.value.lng }
+        : null
+    );
+    map.fitBounds(bounds);
+
+    setMap(map);
+  }, []);
+
+  const onUnmount = useCallback(function callback(map) {
+    setMap(null);
+  }, []);
+
   const animations = {
     initial: { scale: 0, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
@@ -80,13 +108,21 @@ function Question({ quest }) {
                   Size en yakın servis tespit edilmiştir.
                 </Typography>
 
-                <Box
+                {isLoaded ? <Box width={350} height={250}><GoogleMap
+                    center={center}
+                    zoom={15}
+                    onLoad={onLoad}
+                    mapContainerStyle={{width: "100%",height: "100%"}}
+                    onUnmount={onUnmount}
+                  /></Box> : <></>}
+                  
+                {/* <Box
                   marginY={1}
                   width={350}
                   height={250}
                   component="img"
                   src={map}
-                />
+                /> */}
                 <Typography fontWeight="bold" fontSize={24} color="white">
                   {quest.value.name}
                 </Typography>
@@ -99,6 +135,9 @@ function Question({ quest }) {
               </>
             ) : (
               <>
+               
+                 
+              
                 <Typography fontSize={16} color="white">
                   {quest.value}
                 </Typography>
