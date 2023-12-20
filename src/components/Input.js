@@ -78,6 +78,7 @@ function Input({
                 borderWidth: 2,
               }}
               value={text}
+              
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   askQuestion(e.target.value);
